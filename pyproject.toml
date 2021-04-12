@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "cryptodip-bot"
+version = "0.1.0"
+description = "A bot that attempts to buy cryptocurrency on the dip."
+authors = ["Matthew Ahrenstein <matt@ahrenstein.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.25.1"
+pylint = "^2.7.4"
+pymongo = "^3.11.3"
+urllib3 = "^1.26.4"
+boto3 = "^1.17.49"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

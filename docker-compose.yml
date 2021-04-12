@@ -1,0 +1,38 @@
+#
+# Copyright 2021, Matthew Ahrenstein, All Rights Reserved.
+#
+# Maintainers:
+# - Matthew Ahrenstein: matt@ahrenstein.com
+#
+# See LICENSE
+
+version: '2'
+services:
+  bots-db:
+    container_name: bots-db
+    image: mongo:3.6
+    volumes:
+      - ./config/db-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: bots
+      MONGO_INITDB_ROOT_PASSWORD: buythedip
+    expose:
+      - 27017
+    restart: always
+  eth-dips:
+    links:
+      - bots-db
+    container_name: eth-dips
+    image: ahrenstein/cryptodip-bot:latest
+    volumes:
+      - ./config:/config
+    restart: always
+  btc-dips:
+    links:
+      - bots-db
+    container_name: btc-dips
+    image: ahrenstein/cryptodip-bot:latest
+    volumes:
+      - ./config:/config
+    command: [ "python", "-u", "/app/cryptodip_bot.py", "-c", "/config/btc-config.json", "-d"]
+    restart: always

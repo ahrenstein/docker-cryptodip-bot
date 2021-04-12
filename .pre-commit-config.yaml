@@ -1,0 +1,17 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.3.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
+        args:
+          - --ignore-imports=yes
+          - --fail-under=9
+          - --disable=E0401,E1101,W0511
