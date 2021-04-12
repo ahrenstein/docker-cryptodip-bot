@@ -69,7 +69,7 @@ def main(config_file: str, debug_mode: bool):
         mongo_db_connection = "mongodb://bots:buythedip@bots-db:27017/"
     else:
         coinbase_pro_api_url = "https://api.pro.coinbase.com/"
-        mongo_db_connection = "mongodb://bots:buythedipbots-db:27017/"
+        mongo_db_connection = "mongodb://bots:buythedip@bots-db:27017/"
     print("LOG: Starting bot...")
     print("LOG: Monitoring %s to buy $%s worth when a %s%% dip occurs."
           % (config_params[0], config_params[1], config_params[2]))
