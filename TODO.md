@@ -2,12 +2,6 @@ Crypto Dip Buying Bot: To Do List
 =================================
 The versions below are future versions that will be released once those features have been completed.
 
-Version 0.2.0
--------------
-
-1. Make cool down period and check period variables
-    1. Assume defaults if not specified
-
 Version 0.3.0
 -------------
 

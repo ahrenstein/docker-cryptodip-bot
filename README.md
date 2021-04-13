@@ -32,7 +32,10 @@ You will need the following:
 
 The following sections are optional.
 
-1. AWS credentials:
+1. Time variables in the bot config
+   1. Period of days to average (Default: 7)
+   2. Cool down period before buying again (Default: 7)
+2. AWS credentials:
    1. AWS API keys
    2. SNS topic ARN (us-east-1 only for now)
 
@@ -45,7 +48,9 @@ The file should look like this:
   "bot": {
     "currency": "ETH",
     "buy_amount": 75.00,
-    "dip_percentage": 10
+    "dip_percentage": 10,
+     "average_period_days": 3,
+     "cool_down_period_days": 5
   },
   "coinbase": {
     "api_key": "YOUR_API_KEY",

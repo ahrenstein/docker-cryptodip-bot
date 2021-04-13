@@ -2,6 +2,13 @@ Crypto Dip Buying Bot: Changelog
 ================================
 A list of all the changes made to this repo, and the bot it contains
 
+Version 0.2.0
+-------------
+
+1. Bot functions condensed in to 1 file
+2. Averaging time period and purchase cool down period are now both config variables
+3. Fixed some incorrect function descriptions
+
 Version 0.1.0
 -------------
 

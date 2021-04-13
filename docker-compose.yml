@@ -31,7 +31,9 @@ services:
     links:
       - bots-db
     container_name: btc-dips
-    image: ahrenstein/cryptodip-bot:latest
+    #image: ahrenstein/cryptodip-bot:latest
+    image: local/cryptodip:timevals
+    build: ./
     volumes:
       - ./config:/config
     command: [ "python", "-u", "/app/cryptodip_bot.py", "-c", "/config/btc-config.json", "-d"]

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Alerting Functions"""
+"""Internal functions the bot uses"""
 #
-# Python Script:: bot_alerts.py
+# Python Script:: bot_internals.py
 #
 # Linter:: pylint
 #
@@ -38,7 +38,7 @@ def get_aws_creds_from_file(config_file: str) -> [str, str, str]:
 
 def post_to_sns(aws_access_key: str, aws_secret_key: str, sns_topic_arn: str,
                 message_subject: str, message_body: str):
-    """Read all current price records in the database
+    """Post a message and subject to AWS SNS
 
     Args:
     aws_access_key: The AWS access key your bot will use
@@ -50,3 +50,33 @@ def post_to_sns(aws_access_key: str, aws_secret_key: str, sns_topic_arn: str,
     sns = boto3.client('sns', region_name="us-east-1",
                        aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key)
     sns.publish(TopicArn=sns_topic_arn, Subject=message_subject, Message=message_body)
+
+
+def get_average(list_of_numbers: list) -> float:
+    """Get an average of the numbers in a list
+
+    Args:
+    list_of_numbers: A list of floats
+
+    Returns:
+    list_average: A float containing the list average
+    """
+    sum_of_numbers = 0
+    for number in list_of_numbers:
+        sum_of_numbers = sum_of_numbers + number
+    list_average = sum_of_numbers / len(list_of_numbers)
+    return round(list_average, 2)
+
+
+def dip_percent_value(price: float, percent: float) -> float:
+    """Return the value of the current price if it dips a certain percent
+
+    Args:
+    price: The price to check a dip percentage against
+    percent: the dip percentage we care about
+
+    Returns:
+    dip_price: A float containing the price if we hit our dip target
+    """
+    dip_price = price * (1 - percent / 100)
+    return round(dip_price, 2)
