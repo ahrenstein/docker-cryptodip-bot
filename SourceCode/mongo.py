@@ -15,10 +15,9 @@
 
 import datetime
 import pymongo
-import bot_math
+import bot_internals
 
 # Constants that might be useful to adjust for debugging purposes
-AVERAGE_PERIOD_DAYS = 7
 PURGE_OLDER_THAN_DAYS = 30
 
 
@@ -58,12 +57,13 @@ def read_all_prices(db_server: str, currency: str):
         print(record)
 
 
-def average_pricing(db_server: str, currency: str) -> float:
+def average_pricing(db_server: str, currency: str, average_period: int) -> float:
     """Check the last week of prices and return the average
 
         Args:
         db_server: The MongoDB server to connect to
         currency: The cryptocurrency the bot is monitoring
+        average_period: The time period in days to average across
 
         Returns:
         average_price: The average price of the last week
@@ -76,14 +76,14 @@ def average_pricing(db_server: str, currency: str) -> float:
     records = prices_collection.find({})
     for record in records:
         record_age = datetime.datetime.utcnow() - record['time']
-        if record_age.days <= AVERAGE_PERIOD_DAYS:
+        if record_age.days <= average_period:
             price_history.append(record['price'])
-    average_price = bot_math.get_average(price_history)
+    average_price = bot_internals.get_average(price_history)
     return average_price
 
 
 def cleanup_old_records(db_server: str, currency: str):
-    """Remove all price history older than 30 days
+    """Remove all price history older than X days
 
     Args:
     db_server: The MongoDB server to connect to
@@ -119,13 +119,14 @@ def set_last_buy_date(db_server: str, currency: str):
         print("Error updating buy date record: %s" % err)
 
 
-def check_last_buy_date(db_server: str, currency: str) -> bool:
+def check_last_buy_date(db_server: str, currency: str, cool_down_period: int) -> bool:
     """Get the date of the last time the currency was bought
-    and returns true if it was at least a week ago
+    and returns true if it >= cool down period
 
     Args:
     db_server: The MongoDB server to connect to
     currency: The cryptocurrency the bot is monitoring
+    cool_down_period: The time period in days that you will wait before transacting
 
     Returns:
     clear_to_buy: A bool that is true if we are clear to buy
@@ -147,4 +148,4 @@ def check_last_buy_date(db_server: str, currency: str) -> bool:
         print("Error getting buy date record: %s" % err)
         return False
     time_difference = datetime.datetime.utcnow() - last_buy_date
-    return time_difference.days >= 7
+    return time_difference.days >= cool_down_period
