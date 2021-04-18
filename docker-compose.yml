@@ -18,19 +18,22 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: buythedip
     expose:
       - 27017
+    ports:
+      - "127.0.0.1:27017:27017"
     restart: always
-  eth-dips:
+  gemini-eth:
     links:
       - bots-db
-    container_name: eth-dips
+    container_name: gemini-eth
     image: ahrenstein/cryptodip-bot:latest
     volumes:
       - ./config:/config
+    command: [ "python", "-u", "/app/cryptodip_bot.py", "-c", "/config/gemini-config.json", "-d"]
     restart: always
-  btc-dips:
+  coinbase-btc:
     links:
       - bots-db
-    container_name: btc-dips
+    container_name: coinbase-btc
     image: ahrenstein/cryptodip-bot:latest
     volumes:
       - ./config:/config

@@ -20,12 +20,16 @@ To run the bot you will need Docker and docker-compose installed on your compute
 
     docker-compose up -d
 
+Choosing An Exchange
+--------------------
+If you specify Gemini credentials at all in the `config.json` file then the bot will use Gemini even if Coinbae Pro
+credentials are also specified.
+
 Config File
 -----------
 You will need the following:
 
-1. Coinbase Pro credentials tied to the portfolio you want to run the bot against
-   1. Alternatively you can specify Gemini be used instead.
+1. Coinbase Pro or Gemini credentials tied to the portfolio you want to run the bot against
 2. Dip logic parameters:
     1. The cryptocurrency you want to transact in. (It must support being paired against USD in Coinbase Pro)
     2. The buy amount you want in $USD.
@@ -59,8 +63,9 @@ The file should look like this:
     "passphrase": "YOUR_API_PASSPHRASE"
   },
    "gemini": {
-      
-   },
+    "api_key": "YOUR_API_KEY",
+    "api_secret": "YOUR_API_SECRET",
+   }
    "aws": {
     "access_key": "YOUR_API_KEY",
     "secret_access_key": "YOUR_API_SECRET",

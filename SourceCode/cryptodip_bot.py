@@ -35,7 +35,7 @@ def main(config_file: str, debug_mode: bool):
     if config_params[6]:
         print("Gemini support coming")
     else:
-        bot_internals.coinbase_pro_cycle(config_params, debug_mode)
+        bot_internals.coinbase_pro_cycle(config_file, debug_mode)
 
 
 if __name__ == '__main__':

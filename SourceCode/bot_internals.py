@@ -55,7 +55,7 @@ def read_bot_config(config_file: str) -> [str, float, int, int, int, bool, bool]
     aws_loaded = bool('aws' in data)
     using_gemini = bool('gemini' in data)
     return crypto_currency, buy_amount, dip_percentage,\
-        average_period_days, cool_down_period_days, aws_loaded, using_gemini
+           average_period_days, cool_down_period_days, aws_loaded, using_gemini
 
 
 def get_aws_creds_from_file(config_file: str) -> [str, str, str]:
@@ -138,7 +138,7 @@ def coinbase_pro_cycle(config_file: str, debug_mode: bool) -> None:
     # Set API URLs
     if debug_mode:
         coinbase_pro_api_url = "https://api-public.sandbox.pro.coinbase.com/"
-        mongo_db_connection = "mongodb://localhost:27017/"
+        mongo_db_connection = "mongodb://bots:buythedip@localhost:27017/"
     else:
         coinbase_pro_api_url = "https://api.pro.coinbase.com/"
         mongo_db_connection = "mongodb://bots:buythedip@bots-db:27017/"
