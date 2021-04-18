@@ -2,6 +2,13 @@ Crypto Dip Buying Bot: Changelog
 ================================
 A list of all the changes made to this repo, and the bot it contains
 
+Version 0.3.0
+-------------
+
+1. Shifted TODO versions
+2. Added Gemini Support
+
+
 Version 0.2.0
 -------------
 

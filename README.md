@@ -1,10 +1,10 @@
 Crypto Dip Buying Bot
 =====================
-This bot is designed to buy cryptocurrency on Coinbase Pro using a USD prefunded portfolio whenever it detects a significant dip in price.
+This bot is designed to buy cryptocurrency on Coinbase Pro or Gemini using a USD prefunded portfolio whenever it detects a significant dip in price.
 
 PRE-RELEASE WARNING
 -------------------
-I tested this code in a sandbox for a few days, before releasing it. I am running this bot against my live Coinbase Pro account as well.
+I tested this code in a sandbox for a few days, before releasing it. I am running this bot against my live Gemini account as well.
 This is still a very new bot with limited testing so **USE THIS BOT AT YOUR OWN RISK!**
 
 Dip Detection
@@ -25,6 +25,7 @@ Config File
 You will need the following:
 
 1. Coinbase Pro credentials tied to the portfolio you want to run the bot against
+   1. Alternatively you can specify Gemini be used instead.
 2. Dip logic parameters:
     1. The cryptocurrency you want to transact in. (It must support being paired against USD in Coinbase Pro)
     2. The buy amount you want in $USD.
@@ -57,6 +58,9 @@ The file should look like this:
     "api_secret": "YOUR_API_SECRET",
     "passphrase": "YOUR_API_PASSPHRASE"
   },
+   "gemini": {
+      
+   },
    "aws": {
     "access_key": "YOUR_API_KEY",
     "secret_access_key": "YOUR_API_SECRET",
