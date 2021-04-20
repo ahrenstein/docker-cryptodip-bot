@@ -4,7 +4,8 @@ This bot is designed to buy cryptocurrency on Coinbase Pro or Gemini using a USD
 
 PRE-RELEASE WARNING
 -------------------
-I tested this code in a sandbox for a few days, before releasing it. I am running this bot against my live Gemini account as well.
+I tested this code in a sandbox for a few days, before releasing it. I am running this bot against my live Coinbase Pro, and
+Gemini accounts as well.  
 This is still a very new bot with limited testing so **USE THIS BOT AT YOUR OWN RISK!**
 
 Dip Detection
@@ -22,7 +23,7 @@ To run the bot you will need Docker and docker-compose installed on your compute
 
 Choosing An Exchange
 --------------------
-If you specify Gemini credentials at all in the `config.json` file then the bot will use Gemini even if Coinbae Pro
+If you specify Gemini credentials at all in the `config.json` file then the bot will use Gemini even if Coinbase Pro
 credentials are also specified.
 
 Config File

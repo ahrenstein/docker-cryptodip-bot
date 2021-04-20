@@ -19,10 +19,11 @@ import datetime
 import time
 import boto3
 import coinbase_pro
+import gemini_exchange
 import mongo
 
 # Constants that might be useful to adjust for debugging purposes
-CYCLE_INTERVAL_MINUTES = 5 # TODO change to 60 before merging to main
+CYCLE_INTERVAL_MINUTES = 1  # TODO change to 60 before merging to main
 
 
 def read_bot_config(config_file: str) -> [str, float, int, int, int, bool, bool]:
@@ -122,6 +123,89 @@ def dip_percent_value(price: float, percent: float) -> float:
     return round(dip_price, 2)
 
 
+def gemini_exchange_cycle(config_file: str, debug_mode: bool) -> None:
+    """Perform bot cycles using Gemini as the exchange
+
+        Args:
+        config_file: Path to the JSON file containing credentials
+        debug_mode: Are we running in debugging mode?
+        """
+    # Load the configuration file
+    config_params = read_bot_config(config_file)
+    if config_params[5]:
+        aws_config = get_aws_creds_from_file(config_file)
+        message = "%s-Bot has been started" % config_params[0]
+        post_to_sns(aws_config[0], aws_config[1], aws_config[2], message, message)
+    # Set API URLs
+    if debug_mode:
+        gemini_exchange_api_url = "https://api.sandbox.gemini.com"
+        mongo_db_connection = "mongodb://bots:buythedip@bots-db:27017/"
+    else:
+        gemini_exchange_api_url = "https://api.gemini.com"
+        mongo_db_connection = "mongodb://bots:buythedip@bots-db:27017/"
+    print("LOG: Starting bot...\n LOG: Monitoring %s on Gemini to buy $%s worth"
+          "  when a %s%% dip occurs." % (config_params[0], config_params[1], config_params[2]))
+    print("LOG: Dips are checked against a %s day price"
+          " average with a %s day cool down period" % (config_params[3], config_params[4]))
+    for cycle in count():
+        now = datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S")
+        print("LOG: Cycle %s: %s" % (cycle, now))
+        coin_current_price = gemini_exchange.get_coin_price(
+            gemini_exchange_api_url, config_params[0])
+        # Add the current price to the price database
+        mongo.add_price("Gemini", mongo_db_connection, config_params[0], coin_current_price)
+        # Verify that there is enough money to transact, otherwise don't bother
+        if not gemini_exchange.verify_balance(gemini_exchange_api_url,
+                                              config_file, config_params[1]):
+            message = "LOG: Not enough account balance" \
+                      " to buy $%s worth of %s" % (config_params[1], config_params[0])
+            subject = "%s-Bot Funding Issue" % config_params[0]
+            if config_params[5]:
+                post_to_sns(aws_config[0], aws_config[1], aws_config[2],
+                            subject, message)
+            print("LOG: %s" % message)
+            # Sleep for the specified cycle interval then end the cycle
+            time.sleep(CYCLE_INTERVAL_MINUTES * 60)
+            continue
+        # Check if the a week has passed since the last dip buy
+        clear_to_proceed = mongo.check_last_buy_date("Gemini", mongo_db_connection,
+                                                     config_params[0], config_params[4])
+        if clear_to_proceed is True:
+            print("LOG: Last buy date outside cool down period. Checking if a dip is occurring.")
+            average_price = mongo.average_pricing("Gemini", mongo_db_connection,
+                                                  config_params[0], config_params[3])
+            dip_price = dip_percent_value(average_price, config_params[2])
+            print("LOG: A %s%% dip at the average price of %s would be %s"
+                  % (config_params[2], average_price, dip_price))
+            if coin_current_price <= dip_price:
+                print("LOG: The current price of %s is <= %s. We are in a dip!"
+                      % (coin_current_price, dip_price))
+                did_buy = gemini_exchange.buy_currency(gemini_exchange_api_url,
+                                                       config_file,
+                                                       config_params[0], config_params[1])
+                message = "Buy success status is %s for %s worth of %s" \
+                          % (did_buy, config_params[1], config_params[0])
+                subject = "%s-Bot Buy Status Alert" % config_params[0]
+                mongo.set_last_buy_date("Gemini", mongo_db_connection, config_params[0])
+                print("LOG: %s" % message)
+                if config_params[5]:
+                    post_to_sns(aws_config[0], aws_config[1], aws_config[2],
+                                subject, message)
+            else:
+                print("LOG: The current price of %s  is > %s. We are not in a dip!"
+                      % (coin_current_price, dip_price))
+        else:
+            print("LOG: Last buy date inside cool down period. No buys will be attempted.")
+
+        # Run a price history cleanup daily otherwise sleep the interval
+        if (cycle * CYCLE_INTERVAL_MINUTES) % 1440 == 0:
+            print("LOG: Cleaning up price history older than 30 days.")
+            mongo.cleanup_old_records("Gemini", mongo_db_connection, config_params[0])
+        else:
+            # Sleep for the specified cycle interval
+            time.sleep(CYCLE_INTERVAL_MINUTES * 60)
+
+
 def coinbase_pro_cycle(config_file: str, debug_mode: bool) -> None:
     """Perform bot cycles using Coinbase Pro as the exchange
 
@@ -138,7 +222,7 @@ def coinbase_pro_cycle(config_file: str, debug_mode: bool) -> None:
     # Set API URLs
     if debug_mode:
         coinbase_pro_api_url = "https://api-public.sandbox.pro.coinbase.com/"
-        mongo_db_connection = "mongodb://bots:buythedip@localhost:27017/"
+        mongo_db_connection = "mongodb://bots:buythedip@bots-db:27017/"
     else:
         coinbase_pro_api_url = "https://api.pro.coinbase.com/"
         mongo_db_connection = "mongodb://bots:buythedip@bots-db:27017/"
@@ -149,6 +233,10 @@ def coinbase_pro_cycle(config_file: str, debug_mode: bool) -> None:
     for cycle in count():
         now = datetime.datetime.now().strftime("%m/%d/%Y-%H:%M:%S")
         print("LOG: Cycle %s: %s" % (cycle, now))
+        coin_current_price = coinbase_pro.get_coin_price\
+            (coinbase_pro_api_url, config_file, config_params[0])
+        # Add the current price to the price database
+        mongo.add_price("CoinbasePro", mongo_db_connection, config_params[0], coin_current_price)
         # Verify that there is enough money to transact, otherwise don't bother
         if not coinbase_pro.verify_balance(coinbase_pro_api_url, config_file, config_params[1]):
             message = "LOG: Not enough account balance" \
@@ -161,16 +249,12 @@ def coinbase_pro_cycle(config_file: str, debug_mode: bool) -> None:
             # Sleep for the specified cycle interval then end the cycle
             time.sleep(CYCLE_INTERVAL_MINUTES * 60)
             continue
-        coin_current_price = coinbase_pro.get_coin_price\
-            (coinbase_pro_api_url, config_file, config_params[0])
-        # Add the current price to the price database
-        mongo.add_price(mongo_db_connection, config_params[0], coin_current_price)
         # Check if the a week has passed since the last dip buy
-        clear_to_proceed = mongo.check_last_buy_date(mongo_db_connection,
+        clear_to_proceed = mongo.check_last_buy_date("CoinbasePro", mongo_db_connection,
                                                      config_params[0], config_params[4])
         if clear_to_proceed is True:
             print("LOG: Last buy date outside cool down period. Checking if a dip is occurring.")
-            average_price = mongo.average_pricing(mongo_db_connection,
+            average_price = mongo.average_pricing("CoinbasePro", mongo_db_connection,
                                                   config_params[0], config_params[3])
             dip_price = dip_percent_value(average_price, config_params[2])
             print("LOG: A %s%% dip at the average price of %s would be %s"
@@ -183,7 +267,7 @@ def coinbase_pro_cycle(config_file: str, debug_mode: bool) -> None:
                 message = "Buy success status is %s for %s worth of %s"\
                           % (did_buy, config_params[1], config_params[0])
                 subject = "%s-Bot Buy Status Alert" % config_params[0]
-                mongo.set_last_buy_date(mongo_db_connection, config_params[0])
+                mongo.set_last_buy_date("CoinbasePro", mongo_db_connection, config_params[0])
                 print("LOG: %s" % message)
                 if config_params[5]:
                     post_to_sns(aws_config[0], aws_config[1], aws_config[2],
@@ -197,7 +281,7 @@ def coinbase_pro_cycle(config_file: str, debug_mode: bool) -> None:
         # Run a price history cleanup daily otherwise sleep the interval
         if (cycle * CYCLE_INTERVAL_MINUTES) % 1440 == 0:
             print("LOG: Cleaning up price history older than 30 days.")
-            mongo.cleanup_old_records(mongo_db_connection, config_params[0])
+            mongo.cleanup_old_records("CoinbasePro", mongo_db_connection, config_params[0])
         else:
             # Sleep for the specified cycle interval
             time.sleep(CYCLE_INTERVAL_MINUTES * 60)

@@ -33,7 +33,7 @@ def main(config_file: str, debug_mode: bool):
         bot_internals.post_to_sns(aws_config[0], aws_config[1], aws_config[2], message, message)
     # Start the correct cycle
     if config_params[6]:
-        print("Gemini support coming")
+        bot_internals.gemini_exchange_cycle(config_file, debug_mode)
     else:
         bot_internals.coinbase_pro_cycle(config_file, debug_mode)
 

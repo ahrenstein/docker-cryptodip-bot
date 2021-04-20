@@ -5,8 +5,7 @@ The versions below are future versions that will be released once those features
 Version 0.9.0
 -------------
 
-1. Exception catching around DB functions
-2. Cleaner Python code (The big O on this is probably shit)
+1. Cleaner Python code (The big O on this is probably shit)
 
 Version 1.0.0
 -------------
