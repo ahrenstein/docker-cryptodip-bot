@@ -143,7 +143,7 @@ def gemini_exchange_cycle(config_file: str, debug_mode: bool) -> None:
     else:
         gemini_exchange_api_url = "https://api.gemini.com"
         mongo_db_connection = "mongodb://bots:buythedip@bots-db:27017/"
-    print("LOG: Starting bot...\n LOG: Monitoring %s on Gemini to buy $%s worth"
+    print("LOG: Starting bot...\nLOG: Monitoring %s on Gemini to buy $%s worth"
           "  when a %s%% dip occurs." % (config_params[0], config_params[1], config_params[2]))
     print("LOG: Dips are checked against a %s day price"
           " average with a %s day cool down period" % (config_params[3], config_params[4]))
@@ -226,7 +226,7 @@ def coinbase_pro_cycle(config_file: str, debug_mode: bool) -> None:
     else:
         coinbase_pro_api_url = "https://api.pro.coinbase.com/"
         mongo_db_connection = "mongodb://bots:buythedip@bots-db:27017/"
-    print("LOG: Starting bot...\n LOG: Monitoring %s on Coinbase Pro to buy $%s worth"
+    print("LOG: Starting bot...\nLOG: Monitoring %s on Coinbase Pro to buy $%s worth"
           " when a %s%% dip occurs." % (config_params[0], config_params[1], config_params[2]))
     print("LOG: Dips are checked against a %s day price"
           " average with a %s day cool down period" % (config_params[3], config_params[4]))
