@@ -23,7 +23,7 @@ import gemini_exchange
 import mongo
 
 # Constants that might be useful to adjust for debugging purposes
-CYCLE_INTERVAL_MINUTES = 1  # TODO change to 60 before merging to main
+CYCLE_INTERVAL_MINUTES = 60
 
 
 def read_bot_config(config_file: str) -> [str, float, int, int, int, bool, bool]:
