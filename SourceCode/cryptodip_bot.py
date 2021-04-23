@@ -27,10 +27,6 @@ def main(config_file: str, debug_mode: bool):
     """
     # Load the configuration file
     config_params = bot_internals.read_bot_config(config_file)
-    if config_params[5]:
-        aws_config = bot_internals.get_aws_creds_from_file(config_file)
-        message = "%s-Bot has been started" % config_params[0]
-        bot_internals.post_to_sns(aws_config[0], aws_config[1], aws_config[2], message, message)
     # Start the correct cycle
     if config_params[6]:
         bot_internals.gemini_exchange_cycle(config_file, debug_mode)

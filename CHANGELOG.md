@@ -11,6 +11,7 @@ Version 0.3.0
     using the new version of the bot
 3. Fixed a bug where price data would not continue gathering if the bot was not funded
 4. Super basic exception catching around DB functions
+5. `test-compose.yml` for local debugging/testing is now separate from the production example `docker-compose-yml`
 
 Version 0.2.0
 -------------

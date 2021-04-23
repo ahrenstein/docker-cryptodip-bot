@@ -134,7 +134,7 @@ def gemini_exchange_cycle(config_file: str, debug_mode: bool) -> None:
     config_params = read_bot_config(config_file)
     if config_params[5]:
         aws_config = get_aws_creds_from_file(config_file)
-        message = "%s-Bot has been started" % config_params[0]
+        message = "Gemini-%s-Bot has been started" % config_params[0]
         post_to_sns(aws_config[0], aws_config[1], aws_config[2], message, message)
     # Set API URLs
     if debug_mode:
@@ -217,7 +217,7 @@ def coinbase_pro_cycle(config_file: str, debug_mode: bool) -> None:
     config_params = read_bot_config(config_file)
     if config_params[5]:
         aws_config = get_aws_creds_from_file(config_file)
-        message = "%s-Bot has been started" % config_params[0]
+        message = "CoinbasePro-%s-Bot has been started" % config_params[0]
         post_to_sns(aws_config[0], aws_config[1], aws_config[2], message, message)
     # Set API URLs
     if debug_mode:
