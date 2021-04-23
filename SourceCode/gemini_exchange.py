@@ -91,11 +91,16 @@ def get_coin_price(api_url: str, currency: str) -> float:
     coin_price: The price the coin currently holds in USD
     """
     # Instantiate Gemini and query the price
+    coin_price = -1
     api_query = "/v1/pricefeed"
-    price_feeds = requests.get(api_url + api_query).json()
-    for feed in price_feeds:
-        if feed.get('pair') == currency + "USD":
-            coin_price = float(feed.get('price'))
+    price_feeds = requests.get(api_url + api_query +"s").json()
+    try:
+        for feed in price_feeds:
+            if feed.get('pair') == currency + "USD":
+                coin_price = float(feed.get('price'))
+    except Exception as err:
+        print("ERROR: Unable to get price due to %s" % err)
+        print("Price feed: %s" % price_feeds)
     return coin_price
 
 

@@ -152,6 +152,15 @@ def gemini_exchange_cycle(config_file: str, debug_mode: bool) -> None:
         print("LOG: Cycle %s: %s" % (cycle, now))
         coin_current_price = gemini_exchange.get_coin_price(
             gemini_exchange_api_url, config_params[0])
+        if coin_current_price == -1:
+            message = "ERROR: Coin price invalid. This could be an API issue. Ending cycle"
+            print(message)
+            subject = "Gemini-%s-Coin price invalid" % config_params[0]
+            if config_params[5]:
+                post_to_sns(aws_config[0], aws_config[1], aws_config[2],
+                            subject, message)
+            time.sleep(CYCLE_INTERVAL_MINUTES * 60)
+            continue
         # Add the current price to the price database
         mongo.add_price("Gemini", mongo_db_connection, config_params[0], coin_current_price)
         # Verify that there is enough money to transact, otherwise don't bother
@@ -159,7 +168,7 @@ def gemini_exchange_cycle(config_file: str, debug_mode: bool) -> None:
                                               config_file, config_params[1]):
             message = "LOG: Not enough account balance" \
                       " to buy $%s worth of %s" % (config_params[1], config_params[0])
-            subject = "%s-Bot Funding Issue" % config_params[0]
+            subject = "Gemini-%s-Bot Funding Issue" % config_params[0]
             if config_params[5]:
                 post_to_sns(aws_config[0], aws_config[1], aws_config[2],
                             subject, message)
@@ -185,7 +194,7 @@ def gemini_exchange_cycle(config_file: str, debug_mode: bool) -> None:
                                                        config_params[0], config_params[1])
                 message = "Buy success status is %s for %s worth of %s" \
                           % (did_buy, config_params[1], config_params[0])
-                subject = "%s-Bot Buy Status Alert" % config_params[0]
+                subject = "Gemini-%s-Bot Buy Status Alert" % config_params[0]
                 mongo.set_last_buy_date("Gemini", mongo_db_connection, config_params[0])
                 print("LOG: %s" % message)
                 if config_params[5]:
@@ -241,7 +250,7 @@ def coinbase_pro_cycle(config_file: str, debug_mode: bool) -> None:
         if not coinbase_pro.verify_balance(coinbase_pro_api_url, config_file, config_params[1]):
             message = "LOG: Not enough account balance" \
                       " to buy $%s worth of %s" % (config_params[1], config_params[0])
-            subject = "%s-Bot Funding Issue" % config_params[0]
+            subject = "CoinbasePro-%s-Bot Funding Issue" % config_params[0]
             if config_params[5]:
                 post_to_sns(aws_config[0], aws_config[1], aws_config[2],
                             subject, message)
@@ -266,7 +275,7 @@ def coinbase_pro_cycle(config_file: str, debug_mode: bool) -> None:
                                                     config_file, config_params[0], config_params[1])
                 message = "Buy success status is %s for %s worth of %s"\
                           % (did_buy, config_params[1], config_params[0])
-                subject = "%s-Bot Buy Status Alert" % config_params[0]
+                subject = "CoinbasePro-%s-Bot Buy Status Alert" % config_params[0]
                 mongo.set_last_buy_date("CoinbasePro", mongo_db_connection, config_params[0])
                 print("LOG: %s" % message)
                 if config_params[5]:
