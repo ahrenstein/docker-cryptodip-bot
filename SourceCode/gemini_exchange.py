@@ -93,7 +93,7 @@ def get_coin_price(api_url: str, currency: str) -> float:
     # Instantiate Gemini and query the price
     coin_price = -1
     api_query = "/v1/pricefeed"
-    price_feeds = requests.get(api_url + api_query +"s").json()
+    price_feeds = requests.get(api_url + api_query).json()
     try:
         for feed in price_feeds:
             if feed.get('pair') == currency + "USD":
