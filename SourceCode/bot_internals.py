@@ -201,7 +201,7 @@ def gemini_exchange_cycle(config_file: str, debug_mode: bool) -> None:
                     post_to_sns(aws_config[0], aws_config[1], aws_config[2],
                                 subject, message)
             else:
-                print("LOG: The current price of %s  is > %s. We are not in a dip!"
+                print("LOG: The current price of %s is > %s. We are not in a dip!"
                       % (coin_current_price, dip_price))
         else:
             print("LOG: Last buy date inside cool down period. No buys will be attempted.")
@@ -282,7 +282,7 @@ def coinbase_pro_cycle(config_file: str, debug_mode: bool) -> None:
                     post_to_sns(aws_config[0], aws_config[1], aws_config[2],
                                 subject, message)
             else:
-                print("LOG: The current price of %s  is > %s. We are not in a dip!"
+                print("LOG: The current price of %s is > %s. We are not in a dip!"
                       % (coin_current_price, dip_price))
         else:
             print("LOG: Last buy date inside cool down period. No buys will be attempted.")
