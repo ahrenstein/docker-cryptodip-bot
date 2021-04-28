@@ -21,20 +21,19 @@ import bot_internals
 PURGE_OLDER_THAN_DAYS = 30
 
 
-def add_price(exchange: str, db_server: str, currency: str, current_price: float):
+def add_price(bot_name: str, db_server: str, current_price: float):
     """Add a current price record to the database
 
     Args:
-    exchange: The Exchange the bot uses
+    bot_name: The name of the bot
     db_server: The MongoDB server to connect to
-    currency: The cryptocurrency the bot is monitoring
     current_price: The current price of the currency
     """
     timestamp = datetime.datetime.utcnow()
     try:
         # Create a Mongo client to connect to
         mongo_client = pymongo.MongoClient(db_server)
-        bot_db = mongo_client["%s-%s-bot" % (exchange, currency)]
+        bot_db = mongo_client[bot_name]
         prices_collection = bot_db["prices"]
         record = {"time": timestamp, "price": current_price}
         prices_collection.insert_one(record)
@@ -42,18 +41,17 @@ def add_price(exchange: str, db_server: str, currency: str, current_price: float
         print("Error creating price record: %s" % err)
 
 
-def read_all_prices(exchange: str, db_server: str, currency: str):
+def read_all_prices(bot_name: str, db_server: str):
     """Read all current price records in the database
 
     Args:
-    exchange: The Exchange the bot uses
+    bot_name: The name of the bot
     db_server: The MongoDB server to connect to
-    currency: The cryptocurrency the bot is monitoring
     """
     try:
         # Create a Mongo client to connect to
         mongo_client = pymongo.MongoClient(db_server)
-        bot_db = mongo_client["%s-%s-bot" % (exchange, currency)]
+        bot_db = mongo_client[bot_name]
         prices_collection = bot_db["prices"]
         records = prices_collection.find()
     except Exception as err:
@@ -62,13 +60,12 @@ def read_all_prices(exchange: str, db_server: str, currency: str):
         print(record)
 
 
-def average_pricing(exchange: str, db_server: str, currency: str, average_period: int) -> float:
+def average_pricing(bot_name: str, db_server: str, average_period: int) -> float:
     """Check the last week of prices and return the average
 
         Args:
-        exchange: The Exchange the bot uses
+        bot_name: The name of the bot
         db_server: The MongoDB server to connect to
-        currency: The cryptocurrency the bot is monitoring
         average_period: The time period in days to average across
 
         Returns:
@@ -78,7 +75,7 @@ def average_pricing(exchange: str, db_server: str, currency: str, average_period
     try:
         # Create a Mongo client to connect to
         mongo_client = pymongo.MongoClient(db_server)
-        bot_db = mongo_client["%s-%s-bot" % (exchange, currency)]
+        bot_db = mongo_client[bot_name]
         prices_collection = bot_db["prices"]
         records = prices_collection.find({})
     except Exception as err:
@@ -91,18 +88,17 @@ def average_pricing(exchange: str, db_server: str, currency: str, average_period
     return average_price
 
 
-def cleanup_old_records(exchange: str, db_server: str, currency: str):
+def cleanup_old_records(bot_name: str, db_server: str):
     """Remove all price history older than X days
 
     Args:
-    exchange: The Exchange the bot uses
+    bot_name: The name of the bot
     db_server: The MongoDB server to connect to
-    currency: The cryptocurrency the bot is monitoring
     """
     try:
         # Create a Mongo client to connect to
         mongo_client = pymongo.MongoClient(db_server)
-        bot_db = mongo_client["%s-%s-bot" % (exchange, currency)]
+        bot_db = mongo_client[bot_name]
         prices_collection = bot_db["prices"]
         records = prices_collection.find()
     except Exception as err:
@@ -113,19 +109,18 @@ def cleanup_old_records(exchange: str, db_server: str, currency: str):
             prices_collection.delete_one({"_id": record['_id']})
 
 
-def set_last_buy_date(exchange: str, db_server: str, currency: str):
+def set_last_buy_date(bot_name: str, db_server: str):
     """Sets the date the last time the currency was bought
 
     Args:
-    exchange: The Exchange the bot uses
+    bot_name: The name of the bot
     db_server: The MongoDB server to connect to
-    currency: The cryptocurrency the bot is monitoring
     """
     timestamp = datetime.datetime.utcnow()
     try:
         # Create a Mongo client to connect to
         mongo_client = pymongo.MongoClient(db_server)
-        bot_db = mongo_client["%s-%s-bot" % (exchange, currency)]
+        bot_db = mongo_client[bot_name]
         buy_date = bot_db["buy-date"]
     except Exception as err:
         print("Error connecting to buy-date collection: %s" % err)
@@ -136,15 +131,14 @@ def set_last_buy_date(exchange: str, db_server: str, currency: str):
         print("Error updating buy date record: %s" % err)
 
 
-def check_last_buy_date(exchange: str, db_server: str,
-                        currency: str, cool_down_period: int) -> bool:
+def check_last_buy_date(bot_name: str, db_server: str,
+                        cool_down_period: int) -> bool:
     """Get the date of the last time the currency was bought
     and returns true if it >= cool down period
 
     Args:
-    exchange: The Exchange the bot uses
+    bot_name: The name of the bot
     db_server: The MongoDB server to connect to
-    currency: The cryptocurrency the bot is monitoring
     cool_down_period: The time period in days that you will wait before transacting
 
     Returns:
@@ -153,7 +147,7 @@ def check_last_buy_date(exchange: str, db_server: str,
     try:
         # Create a Mongo client to connect to
         mongo_client = pymongo.MongoClient(db_server)
-        bot_db = mongo_client["%s-%s-bot" % (exchange, currency)]
+        bot_db = mongo_client[bot_name]
         buy_date = bot_db["buy-date"]
     except Exception as err:
         print("Error connecting to buy-date collection: %s" % err)
