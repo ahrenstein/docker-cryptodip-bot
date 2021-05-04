@@ -117,7 +117,7 @@ def verify_balance(api_url: str, config_file: str, buy_amount: float) -> bool:
     # Instantiate Gemini and query the price
     gemini_creds = get_gemini_creds_from_file(config_file)
     api_query = "/v1/balances"
-    result = gemini_api_call(api_url,gemini_creds[0], gemini_creds[1], api_query)
+    result = gemini_api_call(api_url, gemini_creds[0], gemini_creds[1], api_query)
     try:
         for account in result:
             if account.get('currency') == "USD":
