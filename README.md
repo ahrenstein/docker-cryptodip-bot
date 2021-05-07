@@ -1,15 +1,17 @@
 Crypto Dip Buying Bot
 =====================
-This bot is designed to buy cryptocurrency on Coinbase Pro using a USD prefunded portfolio whenever it detects a significant dip in price.
+This bot is designed to buy cryptocurrency on Coinbase Pro or Gemini using a USD prefunded portfolio whenever it detects a significant dip in price.
 
-PRE-RELEASE WARNING
--------------------
-I tested this code in a sandbox for a few days, before releasing it. I am running this bot against my live Coinbase Pro account as well.
-This is still a very new bot with limited testing so **USE THIS BOT AT YOUR OWN RISK!**
+USE AT YOUR OWN RISK
+--------------------
+I run this bot full time against my own personal Coinbase Pro and Gemini accounts, however I make no warranties that
+the bot will function. It could crash and miss a dip, or it could detect and buy a dip before the floor. So far
+it has done well for me, but your mileage may vary.  
+As with any open source code: **USE THIS BOT AT YOUR OWN RISK!**
 
 Dip Detection
 -------------
-The bot runs in hourly cycles. Each cycle the bot will check the price of the specified cryptocurrency.
+The bot checks the price in a configurable cycle. Each cycle the bot will check the price of the specified cryptocurrency.
 It will then compare the average price of the previous 7 days worth of price history to the configured dip percentage.
 If the current price is the configured percentage lower than the price average it will buy the cryptocurrency in the
 specified amount of USD.
@@ -20,11 +22,16 @@ To run the bot you will need Docker and docker-compose installed on your compute
 
     docker-compose up -d
 
+Choosing An Exchange
+--------------------
+If you specify Gemini credentials at all in the `config.json` file then the bot will use Gemini even if Coinbase Pro
+credentials are also specified.
+
 Config File
 -----------
 You will need the following:
 
-1. Coinbase Pro credentials tied to the portfolio you want to run the bot against
+1. Coinbase Pro or Gemini credentials tied to the portfolio you want to run the bot against
 2. Dip logic parameters:
     1. The cryptocurrency you want to transact in. (It must support being paired against USD in Coinbase Pro)
     2. The buy amount you want in $USD.
@@ -35,9 +42,11 @@ The following sections are optional.
 1. Time variables in the bot config
    1. Period of days to average (Default: 7)
    2. Cool down period before buying again (Default: 7)
+   3. Check cycle frequency in minutes (Default: 60)
 2. AWS credentials:
    1. AWS API keys
    2. SNS topic ARN (us-east-1 only for now)
+3. Optionally you can override the bot name
 
 These settings should be in a configuration file named `config.json` and placed in `./config`.
 Additionally, you can override the volume mount to a new path if you prefer.
@@ -50,13 +59,19 @@ The file should look like this:
     "buy_amount": 75.00,
     "dip_percentage": 10,
      "average_period_days": 3,
-     "cool_down_period_days": 5
+     "cool_down_period_days": 5,
+     "cycle_time_minutes": 15,
+     "name": "Test-Bot"
   },
   "coinbase": {
     "api_key": "YOUR_API_KEY",
     "api_secret": "YOUR_API_SECRET",
     "passphrase": "YOUR_API_PASSPHRASE"
   },
+   "gemini": {
+    "api_key": "YOUR_API_KEY",
+    "api_secret": "YOUR_API_SECRET",
+   },
    "aws": {
     "access_key": "YOUR_API_KEY",
     "secret_access_key": "YOUR_API_SECRET",

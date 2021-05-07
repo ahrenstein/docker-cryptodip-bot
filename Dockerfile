@@ -25,4 +25,4 @@ RUN poetry install --no-dev
 ENV PYTHONUNBUFFERED=0
 
 # Run the bot
-CMD ["python", "-u", "/app/bankless_bot.py", "-c", "/config/config.json"]
+CMD ["python", "-u", "/app/cryptodip_bot.py", "-c", "/config/config.json"]

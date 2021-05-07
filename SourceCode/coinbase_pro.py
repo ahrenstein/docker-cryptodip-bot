@@ -113,7 +113,7 @@ def verify_balance(api_url: str, config_file: str, buy_amount: float) -> bool:
                 if float(account['balance']) >= buy_amount:
                     return True
     except Exception as err:
-        print("ERROR: Unable to current balance!")
+        print("ERROR: Unable to get current balance!")
         print(err)
         return False
     # Return false by default

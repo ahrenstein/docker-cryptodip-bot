@@ -17,6 +17,14 @@ In order to use the hooks, make sure you have `pre-commit`, and `pylint` in your
 Once in your path you should run `pre-commit install` in order to configure it. If you push commits that fail pre-commit, your PR will
 not be merged.
 
+Local Docker
+------------
+You can run Docker using locally built containers via
+
+    docker-compose -f test-compose.yml up -d
+
+Just make sure you create the proper config files first
+
 poetry
 ------
 This project uses [poetry](https://python-poetry.org/) for Python requirements
