@@ -2,6 +2,12 @@ Crypto Dip Buying Bot: Changelog
 ================================
 A list of all the changes made to this repo, and the bot it contains
 
+Version 0.3.1
+-------------
+
+1. Minor fixes around Gemini API calls when Gemini is having a service outage.
+The bot should no longer crash but API outages do prevent data from being gathered or Txs occurring
+
 Version 0.3.0
 -------------
 

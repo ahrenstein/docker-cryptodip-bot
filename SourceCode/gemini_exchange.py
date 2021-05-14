@@ -93,8 +93,8 @@ def get_coin_price(api_url: str, currency: str) -> float:
     # Instantiate Gemini and query the price
     coin_price = -1
     api_query = "/v1/pricefeed"
-    price_feeds = requests.get(api_url + api_query).json()
     try:
+        price_feeds = requests.get(api_url + api_query).json()
         for feed in price_feeds:
             if feed.get('pair') == currency + "USD":
                 coin_price = float(feed.get('price'))
@@ -117,8 +117,8 @@ def verify_balance(api_url: str, config_file: str, buy_amount: float) -> bool:
     # Instantiate Gemini and query the price
     gemini_creds = get_gemini_creds_from_file(config_file)
     api_query = "/v1/balances"
-    result = gemini_api_call(api_url, gemini_creds[0], gemini_creds[1], api_query)
     try:
+        result = gemini_api_call(api_url, gemini_creds[0], gemini_creds[1], api_query)
         for account in result:
             if account.get('currency') == "USD":
                 balance = float(account.get('amount'))
