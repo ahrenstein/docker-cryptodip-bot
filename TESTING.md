@@ -4,10 +4,10 @@ I test this bot against Coinbase Pro sandbox first then against my live Coinbase
 
 Testing Requirements
 --------------------
-All modules tested must follow these testing rules:
+All code tested must follow these testing rules:
 
-1. All modules must be tested against an AWS account with all optional variables tested.
-2. Changes to modules should be tested to avoid breaking existing infrastructure.
+1. All code must be tested against the exchanges it supports with all optional variables tested.
+2. Changes to code should be tested to avoid breaking existing infrastructure.
 3. Code should pass `pre-commit` checks.
 
 pre-commit
