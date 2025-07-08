@@ -1,3 +1,7 @@
+Deprecated
+==========
+This bot is no longer actively maintained and several of the APIs it relies on may be broken.
+
 Crypto Dip Buying Bot
 =====================
 This bot is designed to buy cryptocurrency on Coinbase Pro or Gemini using a USD prefunded portfolio whenever it detects a significant dip in price.
